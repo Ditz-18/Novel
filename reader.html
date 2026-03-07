@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Baca — Novelku</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<div id="progress-bar" class="progress-bar"></div>
+<nav class="reader-nav" id="reader-nav">
+  <a class="back-link" id="back-link" href="#" style="margin-bottom:0">&larr; Kembali</a>
+  <div style="text-align:center;flex:1">
+    <div style="font-size:13px;color:var(--muted)" id="nav-novel-name"></div>
+    <div style="font-size:15px;font-family:'Cormorant Garamond',serif;font-weight:600" id="nav-chapter-title"></div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span style="font-size:12px;color:var(--muted)" id="nav-progress-text"></span>
+    <button class="btn-icon" id="btn-settings" style="opacity:0.7">&#9881;</button>
+  </div>
+</nav>
+<div class="reader-body" id="reader-body">
+  <div class="reader-chapter-title" id="chapter-title-display"></div>
+  <div class="reader-novel-name" id="novel-name-display"></div>
+  <div class="reader-content" id="reader-content"></div>
+</div>
+<div class="reader-nav-footer">
+  <button class="btn btn-ghost" id="btn-prev">&larr; Sebelumnya</button>
+  <div style="text-align:center"><div style="font-size:12px;color:var(--muted)" id="footer-info"></div></div>
+  <button class="btn btn-ghost" id="btn-next">Berikutnya &rarr;</button>
+</div>
+<div class="settings-panel" id="settings-panel">
+  <div class="settings-title">Tampilan <button class="btn-icon" id="btn-close-settings">&#10005;</button></div>
+  <div class="setting-group"><span class="setting-label">Tema</span>
+    <div class="theme-options">
+      <div class="theme-swatch active" data-theme="dark"   style="background:linear-gradient(135deg,#0f0f13,#c9a96e)"><span>Dark</span></div>
+      <div class="theme-swatch" data-theme="light"  style="background:linear-gradient(135deg,#f5f0e8,#8b5e3c)"><span>Light</span></div>
+      <div class="theme-swatch" data-theme="sepia"  style="background:linear-gradient(135deg,#1a1208,#d4a853)"><span>Sepia</span></div>
+      <div class="theme-swatch" data-theme="forest" style="background:linear-gradient(135deg,#0a120e,#5a9e6f)"><span>Forest</span></div>
+      <div class="theme-swatch" data-theme="ocean"  style="background:linear-gradient(135deg,#080f1a,#4a90d9)"><span>Ocean</span></div>
+    </div>
+  </div>
+  <div class="setting-group"><span class="setting-label">Font</span>
+    <div class="font-options">
+      <div class="font-opt active" data-font="serif">Lora — Klasik</div>
+      <div class="font-opt" data-font="elegant">Cormorant — Elegan</div>
+      <div class="font-opt" data-font="classic">Playfair — Bergaya</div>
+      <div class="font-opt" data-font="sans">DM Sans — Modern</div>
+      <div class="font-opt" data-font="mono">Mono — Retro</div>
+    </div>
+  </div>
+  <div class="setting-group"><span class="setting-label">Ukuran Font</span>
+    <div class="size-control"><input type="range" id="font-size-range" min="14" max="28" value="18"/><span class="size-val" id="font-size-val">18px</span></div>
+  </div>
+</div>
+<div class="toast-container" id="toast-container"></div>
+<script src="js/app.js"></script>
+<script>
+const params=new URLSearchParams(location.search), NOVEL_ID=params.get('novelId'), CH_ID=params.get('chapterId');
+if(!NOVEL_ID||!CH_ID) location.href='index.html';
+let novel=DB.getNovel(NOVEL_ID);
+if(!novel) location.href='index.html';
+const chapters=[...(novel.chapters||[])].sort((a,b)=>(a.order||0)-(b.order||0));
+let chapterIdx=chapters.findIndex(c=>c.id===CH_ID), lastScrollY=0;
+if(chapterIdx<0) chapterIdx=0;
+
+function render(){
+  const ch=chapters[chapterIdx]; if(!ch)return;
+  document.title=ch.title+' \u2014 '+novel.title;
+  document.getElementById('chapter-title-display').textContent=ch.title;
+  document.getElementById('novel-name-display').textContent=novel.title+(novel.author?' \u00b7 '+novel.author:'');
+  document.getElementById('nav-novel-name').textContent=novel.title;
+  document.getElementById('nav-chapter-title').textContent=ch.title;
+  document.getElementById('back-link').href='chapters.html?id='+NOVEL_ID;
+  const content=ch.content||'';
+  document.getElementById('reader-content').innerHTML=content.split(/\n\n+/).map(p=>p.trim()).filter(Boolean).map(p=>'<p>'+p.replace(/\n/g,'<br>')+'</p>').join('')||'<p style="color:var(--muted);font-style:italic">Bab ini masih kosong.</p>';
+  const words=wordCount(content);
+  document.getElementById('footer-info').textContent='Bab '+(chapterIdx+1)+' dari '+chapters.length+' \u00b7 '+words.toLocaleString('id-ID')+' kata \u00b7 ~'+Math.ceil(words/200)+' menit';
+  document.getElementById('btn-prev').style.visibility=chapterIdx>0?'visible':'hidden';
+  document.getElementById('btn-next').style.visibility=chapterIdx<chapters.length-1?'visible':'hidden';
+  window.scrollTo(0,0);
+  wireSettingsPanel('settings-panel','btn-close-settings');
+}
+
+window.addEventListener('scroll',()=>{
+  const doc=document.documentElement, scrolled=doc.scrollTop, total=doc.scrollHeight-doc.clientHeight;
+  document.getElementById('progress-bar').style.width=total>0?(scrolled/total)*100+'%':'0%';
+  document.getElementById('nav-progress-text').textContent=total>0?Math.round((scrolled/total)*100)+'%':'';
+  const nav=document.getElementById('reader-nav');
+  if(scrolled>lastScrollY+20) nav.classList.add('hidden');
+  else if(scrolled<lastScrollY-10) nav.classList.remove('hidden');
+  lastScrollY=scrolled;
+});
+
+document.getElementById('btn-prev').onclick=()=>{if(chapterIdx>0){chapterIdx--;render();}};
+document.getElementById('btn-next').onclick=()=>{if(chapterIdx<chapters.length-1){chapterIdx++;render();}};
+document.getElementById('btn-settings').onclick=()=>document.getElementById('settings-panel').classList.add('open');
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){if(chapterIdx<chapters.length-1){chapterIdx++;render();}}
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){if(chapterIdx>0){chapterIdx--;render();}}
+  if(e.key==='Escape') document.getElementById('settings-panel').classList.remove('open');
+});
+document.addEventListener('click',e=>{
+  const isUI=e.target.closest('nav,.reader-nav-footer,.settings-panel,button,a');
+  if(!isUI) document.getElementById('reader-nav').classList.toggle('hidden');
+});
+render();
+</script>
+</body>
+</html>
