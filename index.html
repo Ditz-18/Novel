@@ -32,9 +32,316 @@
 </div>
 
 <!-- MODAL: Novel Form -->
-<div class="modal-overlay" id="modal-novel">
+<div class="modal-overlay" style="display:none" id="modal-novel">
   <div class="modal">
     <h2 class="modal-title" id="modal-novel-title">Novel Baru</h2>
+    <input type="hidden" id="novel-id"/>
+    <div class="form-group"><label>Judul Novel *</label><input type="text" id="novel-title" placeholder="Masukkan judul novel..."/></div>
+    <div class="form-group"><label>Penulis</label><input type="text" id="novel-author" placeholder="Nama penulis..."/></div>
+    <div class="form-group"><label>Sinopsis</label><textarea id="novel-desc" placeholder="Deskripsi singkat novel..."></textarea></div>
+    <div class="form-group">
+      <label>Genre</label>
+      <select id="novel-genre">
+        <option value="">-- Pilih genre --</option>
+        <option>Romance</option><option>Fantasy</option><option>Thriller</option>
+        <option>Horror</option><option>Mystery</option><option>Sci-Fi</option>
+        <option>Drama</option><option>Adventure</option><option>Slice of Life</option>
+        <option>Historical</option><option>Lainnya</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Tag</label><div class="tag-input-wrap" id="tag-wrap"><input type="text" id="tag-input" placeholder="Tambah tag, tekan Enter..."/></div></div>
+    <div class="form-group">
+      <label>Cover</label>
+      <div style="display:flex;gap:0;margin-bottom:10px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+        <button type="button" id="cover-tab-color" onclick="setCoverMode('color')" style="flex:1;padding:7px;font-size:12px;background:var(--accent);color:var(--bg);border:none;cursor:pointer;transition:all 0.15s">Warna</button>
+        <button type="button" id="cover-tab-image" onclick="setCoverMode('image')" style="flex:1;padding:7px;font-size:12px;background:transparent;color:var(--muted);border:none;cursor:pointer;transition:all 0.15s">URL Gambar</button>
+      </div>
+      <input type="hidden" id="novel-cover-mode" value="color"/>
+      <div id="cover-color-section">
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="color-picker"></div>
+        <input type="hidden" id="novel-color" value="#1a0f2e"/>
+      </div>
+      <div id="cover-image-section" style="display:none">
+        <input type="url" id="novel-cover-url" placeholder="https://example.com/cover.jpg" style="width:100%;padding:10px 12px;margin-bottom:8px"/>
+        <div id="cover-preview" style="display:none;width:80px;aspect-ratio:2/3;border-radius:6px;overflow:hidden;border:1px solid var(--border)">
+          <img id="cover-preview-img" src="" alt="Preview" style="width:100%;height:100%;object-fit:cover;display:block"/>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin-top:6px">Masukkan URL gambar dari internet. Gambar otomatis menyesuaikan ukuran cover.</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="btn-cancel-novel">Batal</button>
+      <button class="btn btn-primary" id="btn-save-novel">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Delete -->
+<div class="modal-overlay" style="display:none" id="modal-delete">
+  <div class="modal" style="max-width:380px;text-align:center">
+    <h2 class="modal-title" style="justify-content:center">Hapus Novel?</h2>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:20px">Semua bab, karakter, dan timeline akan ikut terhapus.</p>
+    <div class="modal-footer" style="justify-content:center">
+      <button class="btn btn-ghost" id="btn-cancel-delete">Batal</button>
+      <button class="btn btn-danger" id="btn-confirm-delete">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Search -->
+<div class="modal-overlay search-modal" id="modal-search">
+  <div class="modal" style="max-width:620px">
+    <h2 class="modal-title">Cari di Semua Novel</h2>
+    <div class="search-input-wrap"><input type="text" id="global-search-input" placeholder="Ketik kata atau frasa..."/></div>
+    <div id="global-search-results"><p class="search-empty">Ketik sesuatu untuk mencari...</p></div>
+    <div class="modal-footer"><button class="btn btn-ghost" id="btn-close-search">Tutup</button></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="settings-panel" id="settings-panel">
+  <div class="settings-title">Pengaturan <button class="btn-icon" id="btn-close-settings">&#10005;</button></div>
+  <div class="setting-group"><span class="setting-label">Tema</span>
+    <div class="theme-options">
+      <div class="theme-swatch" data-theme="dark"   style="background:linear-gradient(135deg,#0f0f13,#c9a96e)"><span>Dark</span></div>
+      <div class="theme-swatch" data-theme="light"  style="background:linear-gradient(135deg,#f5f0e8,#8b5e3c)"><span>Light</span></div>
+      <div class="theme-swatch" data-theme="sepia"  style="background:linear-gradient(135deg,#1a1208,#d4a853)"><span>Sepia</span></div>
+      <div class="theme-swatch" data-theme="forest" style="background:linear-gradient(135deg,#0a120e,#5a9e6f)"><span>Forest</span></div>
+      <div class="theme-swatch" data-theme="ocean"  style="background:linear-gradient(135deg,#080f1a,#4a90d9)"><span>Ocean</span></div>
+    </div>
+  </div>
+  <div class="setting-group"><span class="setting-label">Font</span>
+    <div class="font-options">
+      <div class="font-opt" data-font="serif">Lora — Klasik</div>
+      <div class="font-opt" data-font="elegant">Cormorant — Elegan</div>
+      <div class="font-opt" data-font="classic">Playfair — Bergaya</div>
+      <div class="font-opt" data-font="sans">DM Sans — Modern</div>
+      <div class="font-opt" data-font="mono">Mono — Retro</div>
+    </div>
+  </div>
+  <div class="setting-group"><span class="setting-label">Ukuran Font</span>
+    <div class="size-control"><input type="range" id="font-size-range" min="14" max="28" value="18"/><span class="size-val" id="font-size-val">18px</span></div>
+  </div>
+  <div class="setting-group"><span class="setting-label">Backup</span>
+    <div class="backup-actions">
+      <button class="btn btn-ghost" id="btn-export" style="width:100%;justify-content:center">Export JSON</button>
+      <label class="btn btn-ghost" style="width:100%;justify-content:center;cursor:pointer">Import JSON<input type="file" id="btn-import" accept=".json" style="display:none"/></label>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<script src="app.js"></script>
+<script>
+const COVER_COLORS=['#1a0f2e','#0f1a1a','#1a0f0f','#0f1a0f','#1a150f','#0f0f1a','#1a1a0f','#0a1020','#1a0a10','#101a0a','#1a1020','#0a1a10'];
+let novels=[],filtered=[],activeGenre='',deleteTargetId=null,editingNovelId=null,currentTags=[],selectedColor='#1a0f2e',coverMode='color';
+
+function buildCoverHTML(n,extraStyle){
+  const color=n.color||COVER_COLORS[parseInt(n.id,36)%COVER_COLORS.length];
+  const s=extraStyle||'';
+  if(n.coverUrl){
+    return '<div class="novel-cover" style="background:'+color+';'+s+'">'+
+      '<img src="'+n.coverUrl+'" alt="Cover" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display=\'none\'"/>'+
+      '</div>';
+  }
+  return '<div class="novel-cover" style="background:'+color+';'+s+'"><span class="cover-initial">'+n.title.charAt(0).toUpperCase()+'</span></div>';
+}
+
+function setCoverMode(mode){
+  coverMode=mode;
+  document.getElementById('novel-cover-mode').value=mode;
+  const isImg=mode==='image';
+  document.getElementById('cover-color-section').style.display=isImg?'none':'block';
+  document.getElementById('cover-image-section').style.display=isImg?'block':'none';
+  document.getElementById('cover-tab-color').style.background=isImg?'transparent':'var(--accent)';
+  document.getElementById('cover-tab-color').style.color=isImg?'var(--muted)':'var(--bg)';
+  document.getElementById('cover-tab-image').style.background=isImg?'var(--accent)':'transparent';
+  document.getElementById('cover-tab-image').style.color=isImg?'var(--bg)':'var(--muted)';
+}
+
+function render(){
+  novels=DB.getNovels();
+  applyFilter();
+  renderGenreFilter();
+  renderGrid();
+  updateCount();
+}
+
+function applyFilter(){
+  const q=document.getElementById('search-input').value.toLowerCase();
+  filtered=novels.filter(n=>{
+    const mQ=!q||n.title.toLowerCase().includes(q)||(n.author||'').toLowerCase().includes(q);
+    const mG=!activeGenre||n.genre===activeGenre;
+    return mQ&&mG;
+  });
+}
+
+function updateCount(){
+  const total=novels.reduce((s,n)=>s+totalWords(n),0);
+  document.getElementById('novel-count').textContent=
+    novels.length+' novel \u00b7 '+total.toLocaleString('id-ID')+' kata total';
+}
+
+function renderGenreFilter(){
+  const genres=[...new Set(novels.map(n=>n.genre).filter(Boolean))];
+  const el=document.getElementById('genre-filter');
+  el.innerHTML='';
+  if(!genres.length)return;
+  const all=document.createElement('button');
+  all.className='genre-pill'+((!activeGenre)?' active':'');
+  all.textContent='Semua';
+  all.onclick=()=>{activeGenre='';render();};
+  el.appendChild(all);
+  genres.forEach(g=>{
+    const b=document.createElement('button');
+    b.className='genre-pill'+(activeGenre===g?' active':'');
+    b.textContent=g;
+    b.onclick=()=>{activeGenre=g;render();};
+    el.appendChild(b);
+  });
+}
+
+function renderGrid(){
+  const grid=document.getElementById('novel-grid');
+  if(!filtered.length){
+    grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><h3>'+(novels.length?'Tidak ada yang cocok':'Perpustakaanmu kosong')+'</h3><p style="margin-top:8px">'+(novels.length?'Coba ubah filter':'Mulai buat novel pertamamu!')+'</p></div>';
+    return;
+  }
+  grid.innerHTML=filtered.map((n,i)=>{
+    const chapters=(n.chapters||[]).length,words=totalWords(n);
+    return '<div class="card novel-card fade-in" style="animation-delay:'+(i*0.04)+'s" data-id="'+n.id+'">'+
+      buildCoverHTML(n,'position:relative')+
+      '<div class="novel-card-body">'+
+        '<div class="novel-card-title">'+n.title+'</div>'+
+        '<div class="novel-card-author">'+(n.author||'Tanpa penulis')+'</div>'+
+        (n.genre?'<div><span class="genre-badge">'+n.genre+'</span></div>':'')+
+        '<div class="novel-card-meta"><span>'+chapters+' bab</span><span>\u00b7</span><span>'+words.toLocaleString('id-ID')+' kata</span>'+(n.updatedAt?'<span>\u00b7</span><span>'+formatDate(n.updatedAt)+'</span>':'')+'</div>'+
+      '</div>'+
+      '<div class="novel-card-actions">'+
+        '<button class="btn-icon" onclick="event.stopPropagation();openEditNovel(\''+n.id+'\')">Edit</button>'+
+        '<button class="btn-icon btn-icon-danger" onclick="event.stopPropagation();openDelete(\''+n.id+'\')">Hapus</button>'+
+      '</div></div>';
+  }).join('');
+  document.querySelectorAll('.novel-card').forEach(c=>c.addEventListener('click',()=>location.href='chapters.html?id='+c.dataset.id));
+}
+
+function openNewNovel(){
+  editingNovelId=null;currentTags=[];selectedColor='#1a0f2e';coverMode='color';
+  document.getElementById('modal-novel-title').textContent='Novel Baru';
+  ['novel-id','novel-title','novel-author','novel-desc','novel-cover-url'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('novel-genre').value='';
+  document.getElementById('cover-preview').style.display='none';
+  setCoverMode('color');renderTagsUI();renderColorPicker();
+  document.getElementById('modal-novel').classList.add('open');
+  setTimeout(()=>document.getElementById('novel-title').focus(),100);
+}
+function openEditNovel(id){
+  const n=DB.getNovel(id);if(!n)return;
+  editingNovelId=id;currentTags=[...(n.tags||[])];selectedColor=n.color||'#1a0f2e';
+  coverMode=n.coverUrl?'image':'color';
+  document.getElementById('modal-novel-title').textContent='Edit Novel';
+  document.getElementById('novel-id').value=n.id;
+  document.getElementById('novel-title').value=n.title;
+  document.getElementById('novel-author').value=n.author||'';
+  document.getElementById('novel-desc').value=n.desc||'';
+  document.getElementById('novel-genre').value=n.genre||'';
+  document.getElementById('novel-cover-url').value=n.coverUrl||'';
+  if(n.coverUrl){
+    const img=document.getElementById('cover-preview-img');
+    img.src=n.coverUrl;
+    document.getElementById('cover-preview').style.display='block';
+  } else {
+    document.getElementById('cover-preview').style.display='none';
+  }
+  setCoverMode(coverMode);renderTagsUI();renderColorPicker();
+  document.getElementById('modal-novel').classList.add('open');
+}
+function closeNovelModal(){document.getElementById('modal-novel').classList.remove('open');}
+function saveNovel(){
+  const title=document.getElementById('novel-title').value.trim();
+  if(!title){toast('Judul tidak boleh kosong','error');return;}
+  const ex=editingNovelId?DB.getNovel(editingNovelId):null;
+  const mode=document.getElementById('novel-cover-mode').value;
+  const coverUrl=mode==='image'?document.getElementById('novel-cover-url').value.trim():'';
+  DB.saveNovel({id:editingNovelId||genId(),title,
+    author:document.getElementById('novel-author').value.trim(),
+    desc:document.getElementById('novel-desc').value.trim(),
+    genre:document.getElementById('novel-genre').value,
+    tags:[...currentTags],color:selectedColor,coverUrl,
+    chapters:ex?ex.chapters:[],characters:ex?ex.characters:[],events:ex?ex.events:[],
+    createdAt:ex?ex.createdAt:Date.now(),updatedAt:Date.now()});
+  closeNovelModal();render();toast(editingNovelId?'Novel diperbarui!':'Novel dibuat!','success');
+}
+function renderTagsUI(){
+  const wrap=document.getElementById('tag-wrap');wrap.innerHTML='';
+  currentTags.forEach(t=>{
+    const el=document.createElement('span');el.className='tag-item';
+    el.innerHTML=t+'<button onclick="removeTag(\''+t+'\')">x</button>';
+    wrap.appendChild(el);
+  });
+  const inp=document.createElement('input');inp.type='text';inp.id='tag-input';
+  inp.placeholder='Tambah tag, tekan Enter...';
+  inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addTag(inp.value);inp.value='';}};
+  wrap.appendChild(inp);
+}
+function addTag(v){v=v.trim();if(v&&!currentTags.includes(v)){currentTags.push(v);renderTagsUI();}}
+function removeTag(t){currentTags=currentTags.filter(x=>x!==t);renderTagsUI();}
+function renderColorPicker(){
+  const el=document.getElementById('color-picker');
+  el.innerHTML=COVER_COLORS.map(c=>'<button onclick="selectColor(\''+c+'\')" style="width:32px;height:32px;border-radius:50%;background:'+c+';cursor:pointer;border:3px solid '+(selectedColor===c?'var(--accent)':'transparent')+';transition:border 0.15s"></button>').join('');
+  document.getElementById('novel-color').value=selectedColor;
+}
+function selectColor(c){selectedColor=c;renderColorPicker();}
+function openDelete(id){deleteTargetId=id;document.getElementById('modal-delete').classList.add('open');}
+function closeDelete(){deleteTargetId=null;document.getElementById('modal-delete').classList.remove('open');}
+function confirmDelete(){if(!deleteTargetId)return;DB.deleteNovel(deleteTargetId);closeDelete();render();toast('Novel dihapus','success');}
+function openGlobalSearch(){document.getElementById('modal-search').classList.add('open');setTimeout(()=>document.getElementById('global-search-input').focus(),100);}
+function closeGlobalSearch(){document.getElementById('modal-search').classList.remove('open');}
+
+// Wire up semua event listeners
+document.getElementById('novel-cover-url').addEventListener('input',function(){
+  const url=this.value.trim();
+  const preview=document.getElementById('cover-preview');
+  const img=document.getElementById('cover-preview-img');
+  if(url){img.src=url;img.onload=()=>{preview.style.display='block';};img.onerror=()=>{preview.style.display='none';};}
+  else{preview.style.display='none';}
+});
+document.getElementById('global-search-input').addEventListener('input',function(){
+  const q=this.value.trim(),container=document.getElementById('global-search-results');
+  if(!q){container.innerHTML='<p class="search-empty">Ketik sesuatu untuk mencari...</p>';return;}
+  const allNovels=DB.getNovels();let allResults=[];
+  allNovels.forEach(nov=>{searchInNovel(nov,q).forEach(r=>allResults.push({...r,novelId:nov.id,novelTitle:nov.title}));});
+  if(!allResults.length){container.innerHTML='<p class="search-empty">Tidak ada hasil untuk "'+q+'"</p>';return;}
+  container.innerHTML=allResults.slice(0,30).map(r=>{
+    const esc=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const preview=r.preview.replace(new RegExp(esc,'gi'),m=>'<mark>'+m+'</mark>');
+    return '<div class="search-result-item" onclick="closeGlobalSearch();location.href=\'editor.html?novelId='+r.novelId+'&chapterId='+r.chapterId+'\'">'+
+      '<div class="search-result-chapter">'+r.novelTitle+' &rsaquo; '+r.chapterTitle+'</div>'+
+      '<div class="search-result-preview">'+preview+'</div></div>';
+  }).join('');
+});
+document.getElementById('btn-new-novel').addEventListener('click',openNewNovel);
+document.getElementById('btn-search').addEventListener('click',openGlobalSearch);
+document.getElementById('btn-cancel-novel').addEventListener('click',closeNovelModal);
+document.getElementById('btn-save-novel').addEventListener('click',saveNovel);
+document.getElementById('btn-cancel-delete').addEventListener('click',closeDelete);
+document.getElementById('btn-confirm-delete').addEventListener('click',confirmDelete);
+document.getElementById('btn-close-search').addEventListener('click',closeGlobalSearch);
+document.getElementById('search-input').addEventListener('input',render);
+document.getElementById('modal-novel').addEventListener('click',e=>{if(e.target===e.currentTarget)closeNovelModal();});
+document.getElementById('modal-delete').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDelete();});
+document.getElementById('modal-search').addEventListener('click',e=>{if(e.target===e.currentTarget)closeGlobalSearch();});
+document.getElementById('btn-settings').addEventListener('click',()=>document.getElementById('settings-panel').classList.add('open'));
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeNovelModal();closeDelete();closeGlobalSearch();document.getElementById('settings-panel').classList.remove('open');}
+  if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();openGlobalSearch();}
+});
+
+wireSettingsPanel('settings-panel','btn-close-settings');
+render();
+</script>
+</body>
+</html>    <h2 class="modal-title" id="modal-novel-title">Novel Baru</h2>
     <input type="hidden" id="novel-id"/>
     <div class="form-group"><label>Judul Novel *</label><input type="text" id="novel-title" placeholder="Masukkan judul novel..."/></div>
     <div class="form-group"><label>Penulis</label><input type="text" id="novel-author" placeholder="Nama penulis..."/></div>
