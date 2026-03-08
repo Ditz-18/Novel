@@ -7,12 +7,15 @@
   <link rel="stylesheet" href="style.css"/>
   <style>
     /* ── EDITOR LAYOUT ── */
-    body { overflow: hidden; }
+    body { overflow: hidden; margin: 0; }
     .editor-shell {
-      display: grid;
-      grid-template-rows: auto auto 1fr auto;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
       height: 100dvh;
       overflow: hidden;
+      position: fixed;
+      inset: 0;
     }
 
     /* Top bar row 1 — judul, status, simpan */
@@ -22,9 +25,11 @@
       gap: 8px;
       padding: 0 12px;
       height: 52px;
+      min-height: 52px;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       min-width: 0;
+      flex-shrink: 0;
     }
     .ed-title {
       flex: 1;
@@ -75,8 +80,10 @@
       gap: 6px;
       padding: 0 12px;
       height: 38px;
+      min-height: 38px;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
     }
     .ed-toolbar {
       display: flex;
@@ -107,6 +114,7 @@
     /* Goal progress bar */
     .ed-goal-bar {
       height: 2px;
+      min-height: 2px;
       background: var(--border);
       flex-shrink: 0;
     }
@@ -117,14 +125,17 @@
       transition: width 0.3s;
     }
 
-    /* Writing area */
+    /* Writing area — takes all remaining space */
     .ed-area {
-      overflow: hidden;
+      flex: 1;
+      min-height: 0;   /* critical for flex child to shrink */
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
     .ed-textarea {
       flex: 1;
+      min-height: 0;
       resize: none;
       border: none;
       background: var(--bg);
@@ -132,12 +143,13 @@
       font-family: var(--font-body);
       font-size: var(--font-size);
       line-height: 1.9;
-      padding: 48px 60px;
-      max-width: 740px;
+      padding: 32px 48px;
       width: 100%;
-      margin: 0 auto;
+      max-width: 740px;
+      align-self: center;
       outline: none;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       caret-color: var(--accent);
       box-sizing: border-box;
     }
@@ -155,6 +167,7 @@
       flex-shrink: 0;
       gap: 12px;
       flex-wrap: wrap;
+      min-height: 38px;
     }
     .ed-stats { display: flex; gap: 14px; flex-wrap: wrap; }
     .ed-goal  { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }

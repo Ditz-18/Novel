@@ -265,21 +265,20 @@ function renderChapters(){
   if(!chapters.length){el.innerHTML='<div class="empty-state" style="padding:48px 20px"><h3>Belum ada bab</h3><p style="margin-top:8px">'+(statusFilter?'Tidak ada bab dengan status ini.':'Mulai tulis bab pertamamu!')+'</p></div>';return;}
   el.innerHTML=chapters.map((ch,i)=>
     '<div class="chapter-item" data-id="'+ch.id+'">'+
-      '<div class="chapter-num">'+(ch.order||i+1)+'</div>'+
-      '<div class="chapter-info">'+
-        '<div class="chapter-title-text">'+ch.title+'</div>'+
-        '<div class="chapter-meta">'+statusBadge(ch.status||'draft')+'<span>'+wordCount(ch.content||'')+' kata</span>'+(ch.updatedAt?'<span>\u00b7 '+formatDate(ch.updatedAt)+'</span>':'')+(ch.drafts&&ch.drafts.length?'<span style="color:var(--accent)">\u00b7 '+ch.drafts.length+' versi</span>':'')+'</div>'+
+      '<div class="chapter-item-left" onclick="location.href=\'editor.html?novelId='+NOVEL_ID+'&chapterId='+ch.id+'\'">'+
+        '<div class="chapter-num">'+(ch.order||i+1)+'</div>'+
+        '<div class="chapter-info">'+
+          '<div class="chapter-title-text">'+ch.title+'</div>'+
+          '<div class="chapter-meta">'+statusBadge(ch.status||'draft')+'<span>'+wordCount(ch.content||'')+' kata</span>'+(ch.updatedAt?'<span>\u00b7 '+formatDate(ch.updatedAt)+'</span>':'')+(ch.drafts&&ch.drafts.length?'<span style="color:var(--accent)">\u00b7 '+ch.drafts.length+' versi</span>':'')+'</div>'+
+        '</div>'+
       '</div>'+
-      '<div class="chapter-actions">'+
-        '<button class="btn-icon" onclick="event.stopPropagation();openEditChapter(\''+ch.id+'\')">Edit</button>'+
-        '<button class="btn-icon btn-icon-danger" onclick="event.stopPropagation();openDelChapter(\''+ch.id+'\')">Hapus</button>'+
+      '<div class="chapter-item-right">'+
+        '<button class="btn-icon" onclick="openEditChapter(\''+ch.id+'\')">Edit</button>'+
+        '<button class="btn-icon btn-icon-danger" onclick="openDelChapter(\''+ch.id+'\')">Hapus</button>'+
+        '<button class="btn btn-ghost" style="font-size:12px;padding:6px 10px" onclick="location.href=\'reader.html?novelId='+NOVEL_ID+'&chapterId='+ch.id+'\'">Baca</button>'+
       '</div>'+
-      '<button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;flex-shrink:0" onclick="event.stopPropagation();location.href=\'reader.html?novelId='+NOVEL_ID+'&chapterId='+ch.id+'\'">Baca</button>'+
     '</div>'
   ).join('');
-  document.querySelectorAll('.chapter-item').forEach(el=>{
-    el.addEventListener('click',()=>location.href='editor.html?novelId='+NOVEL_ID+'&chapterId='+el.dataset.id);
-  });
 }
 
 function renderCharacters(){

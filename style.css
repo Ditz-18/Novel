@@ -109,14 +109,15 @@ input:focus,textarea:focus,select:focus { border-color:var(--accent); }
 
 /* CHAPTER LIST */
 .chapter-list { display:flex; flex-direction:column; gap:8px; }
-.chapter-item { display:flex; align-items:center; gap:16px; padding:14px 18px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); transition:all var(--transition); cursor:pointer; }
+.chapter-item { display:flex; align-items:center; gap:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); transition:all var(--transition); overflow:hidden; }
 .chapter-item:hover { border-color:var(--accent); }
+.chapter-item-left { display:flex; align-items:center; gap:14px; padding:14px 16px; flex:1; min-width:0; cursor:pointer; }
+.chapter-item-left:hover .chapter-title-text { color:var(--accent); }
+.chapter-item-right { display:flex; align-items:center; gap:4px; padding:8px 10px; flex-shrink:0; border-left:1px solid var(--border); }
 .chapter-num { width:28px; height:28px; border-radius:50%; background:rgba(201,169,110,0.12); color:var(--accent); font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .chapter-info { flex:1; min-width:0; }
-.chapter-title-text { font-size:15px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.chapter-title-text { font-size:15px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color var(--transition); }
 .chapter-meta { font-size:12px; color:var(--muted); margin-top:2px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.chapter-actions { display:flex; gap:4px; opacity:0; transition:opacity var(--transition); flex-shrink:0; }
-.chapter-item:hover .chapter-actions { opacity:1; }
 
 /* SEARCH */
 .search-modal .modal { max-width:620px; }
@@ -275,8 +276,9 @@ input:focus,textarea:focus,select:focus { border-color:var(--accent); }
   .filter-bar { width:100%; }
   .stats-row { gap:16px; }
   .novel-grid { grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; }
-  .chapter-item { gap:10px; padding:12px 12px; }
-  .chapter-actions { gap:2px; }
+  .chapter-item-left { padding:12px; gap:10px; }
+  .chapter-item-right { padding:6px 8px; gap:2px; }
+  .chapter-item-right .btn { font-size:11px; padding:4px 8px; }
   .settings-panel { width:100%; right:-100%; }
   .modal { padding:20px; }
   .novel-title-lg { font-size:28px; }
